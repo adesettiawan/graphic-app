@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\ImportController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,4 +25,16 @@ use Illuminate\Support\Facades\Route;
 // Backend Routing
 // ----------------------------------------------------------------------
 
-Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::namespace('Auth')->group(function () {
+    Route::get('login', [LoginController::class, 'login_show_page'])->name('login');
+    Route::post('login_processed', [LoginController::class, 'login_processed'])->name('login_processed');
+    // Route::get('register', [LoginController::class, 'show_signup_form'])->name('register');
+    // Route::post('register', [LoginController::class, 'process_signup']);
+    Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+});
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('importcsv', [ImportController::class, 'index'])->name('importcsv');
+    Route::post('import_processed', [ImportController::class, 'import_processed'])->name('import_processed');
+});
