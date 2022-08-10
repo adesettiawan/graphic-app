@@ -40,4 +40,5 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('importcsv', [ImportController::class, 'index'])->name('importcsv');
     Route::post('import_processed', [ImportController::class, 'import_processed'])->name('import_processed');
     Route::get('graphic', [GraphController::class, 'index'])->name('graphic');
+    Route::get('search', [GraphController::class, 'search'])->name('search-graphic');
 });

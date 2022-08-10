@@ -28,4 +28,21 @@ class GraphController extends Controller
         // dd($data['chart_data']);
         return view('backend.graph.index', compact('data'));
     }
+
+    public function search(Request $request)
+    {
+        // get the search term
+        $text = $request->input('text');
+
+        $newDate = Carbon::createFromFormat('Y-m-d', $text)->format('Y-m-d 00:00:00');
+
+
+        // search the members table
+        $graphs = DB::table('graphs')->where('created_at', 'Like', $newDate)->get();
+
+        // dd($graphs);
+
+        // return the results
+        return response()->json($graphs);
+    }
 }

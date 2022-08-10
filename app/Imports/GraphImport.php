@@ -22,8 +22,8 @@ class GraphImport implements ToModel, WithHeadingRow
             'id_text' => $row['id'],
             'created_by' => 1,
             'updated_by' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
     }
 }

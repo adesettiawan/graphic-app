@@ -1,6 +1,31 @@
 @extends('backend.layouts.app')
 
 @section('content')
+<style>
+    #barModal {
+        z-index: 1;
+        opacity: 100;
+        transition: opacity 0.2s;
+    }
+
+    #barModal.hide {
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.2s;
+        height: 0;
+    }
+
+    .modal-background {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        /* background-color: rgba(0, 0, 0, 0.1) */
+    }
+</style>
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-12">
@@ -26,6 +51,36 @@
                     </form>
                 </div>
             </div>
+
+            <div id="barModal" class="hide modal-background">
+                <div class="card shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Data pada tanggal: <span class="label"><strong>934934</strong></span>
+                        </h5>
+                        <button type="button" onclick="modalClose()" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="table-records" class="table table-responsive table-hover">
+                            <thead>
+                                <th>No</th>
+                                <th>From User</th>
+                                <th>From User ID</th>
+                                <th>Text</th>
+                                <th>ID</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="modalClose()" type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- charts-->
             <div class="row my-4">
                 <div class="col-md-12">
@@ -36,6 +91,8 @@
                     </div>
                 </div> <!-- .col -->
             </div> <!-- end section -->
+
+
         </div> <!-- .col-12 -->
     </div> <!-- .row -->
 </div> <!-- .container-fluid -->
@@ -45,6 +102,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js">
 </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 <script type="text/javascript">
     //get the pie chart canvas
@@ -120,10 +178,71 @@
     };
 
     // render init block
+    const ctx =  document.getElementById('myChart');
     const myChart = new Chart(
-      document.getElementById('myChart'),
+      ctx,
       config
     );
+
+    //modal
+    const barModal = document.getElementById('barModal');
+
+    function modalClose(){
+        barModal.classList.toggle('hide');
+        $('#barModal').hide();
+        $('#myChart').show();
+        location.reload();
+
+    }
+
+    function modalOpen(click){
+        const points = myChart.getElementsAtEventForMode(click, 'nearest',{
+            intersect:true
+        },true);
+        if(points[0]){
+            const dataset = points[0].datasetIndex;
+            const datapoint = points[0].index;
+            console.log(datas.labels[datapoint]);
+            barModal.classList.toggle('hide');
+
+            const labels = document.querySelectorAll('.label');
+            console.log(labels);
+            labels.forEach(label =>{
+                label.innerText = datas.labels[datapoint];
+            });
+            
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type:"GET",
+                url: '{{url("/search")}}',
+                data: {
+                    text: datas.labels[datapoint]
+                },
+                headers: {
+                    'X-CSRF-Token': '{{ csrf_token() }}',
+                },
+                success: function(response) {
+                    console.log(response);
+                    let trHTML = '';
+                    let no=1;
+                $.each(response, function (i, item) {
+                    trHTML += '<tr><td>' + no++ + '</td><td>' + item.from_user + '</td><td>' + item.from_user_id + '</td><td>' + item.text + '</td>'+ '</td><td>' + item.id_text + '</td></tr>';
+                });
+                $('#table-records').append(trHTML);
+                $('#myChart').hide();
+                $('#barModal').show();
+
+                }
+            });
+        }
+        
+    }
+
+    ctx.onclick = modalOpen;
 </script>
 
 @endsection
