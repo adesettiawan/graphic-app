@@ -26,6 +26,7 @@ class ImportController extends Controller
 
     public function import_processed()
     {
+        //validation when upload file data
         Excel::import(new GraphImport, request()->file('file_data'));
 
         return redirect('importcsv')->with('success', 'Import data successfully!');
