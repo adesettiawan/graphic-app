@@ -41,4 +41,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('import_processed', [ImportController::class, 'import_processed'])->name('import_processed');
     Route::get('graphic', [GraphController::class, 'index'])->name('graphic');
     Route::get('search', [GraphController::class, 'search'])->name('search-graphic');
+    Route::get('profile', [GraphController::class, 'profile'])->name('profile');
+    Route::post('change-password', [GraphController::class, 'changePassword'])->name('change.password');
 });

@@ -51,10 +51,11 @@ class LoginController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|min:8',
         ], [
             'email.required' => 'Maaf email tidak boleh kosong!',
             'password.required' => 'Maaf password tidak boleh kosong!',
+            'password.min' => 'Maaf password minimal 8 karakter!',
         ]);
 
         $credentials = $request->only('email', 'password');

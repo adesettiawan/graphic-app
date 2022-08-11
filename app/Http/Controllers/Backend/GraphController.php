@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Graph;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class GraphController extends Controller
 {
@@ -44,5 +47,34 @@ class GraphController extends Controller
 
         // return the results
         return response()->json($graphs);
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('backend.graph.profile', compact('user'));
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            // 'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required',
+        ]);
+
+        // $user = Auth::user();
+
+        //Match old password
+        // if (!Hash::check($request->current_password, $user->password)) {
+        //     return back()->with('error', 'Current password does not match!');
+        // }
+
+        //Update the new Password
+        User::whereId(auth()->user()->id)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return back()->with('success', 'Password successfully changed!');
     }
 }

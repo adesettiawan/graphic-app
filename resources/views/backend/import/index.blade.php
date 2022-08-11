@@ -20,7 +20,7 @@
                         </div>
                         @endif
                         @if ($message = Session::get('success'))
-                        <div class="alert alert-success notification" style="color: green;" role="alert">
+                        <div class="alert alert-success notification" role="alert">
                             <span class="fe fe-smile fe-16 mr-2"></span> {{ $message }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
