@@ -11,6 +11,22 @@
             <div class="row">
                 <div class="col-md-12 mb-4">
                     <div class="card shadow">
+                        @if ($message = Session::get('errors'))
+                        <div class="alert alert-danger notification" role="alert">
+                            <span class="fe fe-frown fe-16 mr-2"></span> {{ $message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        @endif
+                        @if ($message = Session::get('success'))
+                        <div class="alert alert-success notification" style="color: green;" role="alert">
+                            <span class="fe fe-smile fe-16 mr-2"></span> {{ $message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        @endif
                         <div class="card-body">
                             <form action="{{ route('import_processed') }}" enctype="multipart/form-data" method="POST">
                                 @csrf
@@ -49,6 +65,8 @@
             $('.custom-file-label').html(fileName);
         })
     })
+
+    setTimeout(function () { $('.notification').hide(); }, 5000);
 </script>
 
 @endsection

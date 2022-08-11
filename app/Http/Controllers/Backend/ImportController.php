@@ -27,8 +27,12 @@ class ImportController extends Controller
     public function import_processed()
     {
         //validation when upload file data
-        Excel::import(new GraphImport, request()->file('file_data'));
+        try {
+            Excel::import(new GraphImport, request()->file('file_data'));
 
-        return redirect('importcsv')->with('success', 'Import data successfully!');
+            return redirect()->intended('importcsv')->with('success', 'Import data successfully!');
+        } catch (\Exception  $e) {
+            return redirect()->back()->with('errors', 'Please Check your file, Something is wrong there.');
+        }
     }
 }
