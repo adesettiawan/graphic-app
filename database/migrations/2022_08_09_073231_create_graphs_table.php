@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('id_text')->notNull();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->timestamps();
+            $table->date('created_at');
+            $table->date('updated_at');
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade')->notNull();
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade')->notNull();

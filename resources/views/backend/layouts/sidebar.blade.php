@@ -35,7 +35,7 @@
                     <span class="ml-3 item-text">Import CSV</span>
                 </a>
             </li>
-            <li class="nav-item w-100">
+            <li class="nav-item w-100 {{ Request::is('graphic') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('graphic') }}">
                     <i class="fe fe-bar-chart-2 fe-16"></i>
                     <span class="ml-3 item-text">Graphic Data</span>

@@ -13,6 +13,8 @@ class Graph extends Model
     protected $keyType = 'string';    // If primaryKey string you can add keyType
     protected $guarded = [];
 
+    public $timestamps = false;  // If you don't use timestamps you can add this line
+
 
     /**
      * Get the user that owns the News

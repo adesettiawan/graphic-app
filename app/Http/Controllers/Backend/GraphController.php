@@ -34,7 +34,7 @@ class GraphController extends Controller
         // get the search term
         $text = $request->input('text');
 
-        $newDate = Carbon::createFromFormat('Y-m-d', $text)->format('Y-m-d 00:00:00');
+        $newDate = Carbon::createFromFormat('Y-m-d', $text)->format('Y-m-d');
 
 
         // search the members table

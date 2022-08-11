@@ -34,7 +34,7 @@
 
             <div class="row align-items-center my-2">
                 <div class="col-auto ml-auto">
-                    <form class="form-inline">
+                    <form class="form-inline" id="dateRange">
                         <div class="form-group">
                             <label for="reportrange" class="sr-only">Date Ranges</label>
                             <div id="reportrange" class="px-2 py-2 text-muted">
@@ -70,6 +70,7 @@
                                 <th>From User ID</th>
                                 <th>Text</th>
                                 <th>ID</th>
+                                <th>Tanggal</th>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -112,7 +113,7 @@
     const datas = {
         labels: data.label,
       datasets: [{
-        // label: 'Jumlah Data',
+        label: 'Jumlah Data',
         data: data.data,
         barThickness: 20,
         pointRadius: !1,
@@ -174,7 +175,10 @@
                 display: false
             },
         },
-      }
+        onHover:(event, elements) => {
+            event.native.target.style.cursor = elements[0] ? 'pointer' : 'default';
+        },
+      },
     };
 
     // render init block
@@ -230,10 +234,11 @@
                     let trHTML = '';
                     let no=1;
                 $.each(response, function (i, item) {
-                    trHTML += '<tr><td>' + no++ + '</td><td>' + item.from_user + '</td><td>' + item.from_user_id + '</td><td>' + item.text + '</td>'+ '</td><td>' + item.id_text + '</td></tr>';
+                    trHTML += '<tr><td>' + no++ + '</td><td>' + item.from_user + '</td><td>' + item.from_user_id + '</td><td>' + item.text + '</td><td>' + item.id_text +'</td><td>' + item.created_at + '</td></tr>';
                 });
                 $('#table-records').append(trHTML);
                 $('#myChart').hide();
+                $('#dateRange').hide();
                 $('#barModal').show();
 
                 }
