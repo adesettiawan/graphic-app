@@ -23,25 +23,17 @@
                     </div>
                     <hr class="my-4">
                     <div class="form-group">
-                        <label for="firstname">Firstname</label>
-                        <input type="text" id="name" name="name" class="form-control" readonly
+                        <label for="firstname">Fullname</label>
+                        <input type="text" id="name" name="name" class="form-control" disabled
                             value="{{ $user->name }}">
                     </div>
                     <div class="form-group">
                         <label for="inputEmail4">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" readonly
+                        <input type="email" class="form-control" id="email" name="email" disabled
                             value="{{ $user->email }}">
                     </div>
                     <hr class="my-4">
                     <div class="my-4">
-                        {{-- @if ($message = Session::get('errors'))
-                        <div class="alert alert-danger notification" role="alert">
-                            <span class="fe fe-frown fe-16 mr-2"></span> {{ $message }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        @endif --}}
                         @if (count($errors) > 0)
                         <div class="alert alert-danger">
                             <span class="fe fe-frown fe-16 mr-2"></span> Please Check your input, Something is wrong
