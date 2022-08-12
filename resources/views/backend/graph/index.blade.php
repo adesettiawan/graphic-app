@@ -25,6 +25,11 @@
         height: auto;
         /* background-color: rgba(0, 0, 0, 0.1) */
     }
+
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        opacity: 0.3;
+    }
 </style>
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -36,17 +41,21 @@
                 <div class="col-auto ml-auto">
                     <form class="form-inline" id="dateRange">
                         <div class="form-group">
-                            <label for="reportrange" class="sr-only">Date Ranges</label>
-                            <div id="reportrange" class="px-2 py-2 text-muted">
-                                <i class="fe fe-calendar fe-16 mx-2"></i>
-                                <span class="small"></span>
+                            <label for="date-input1">Date Range:</label>
+                            <div class="input-group ml-3">
+                                <input type="date" class="form-control" id="start-date" value="2022-08-01">
+                                <input type="date" class="form-control" id="end-date" value="2022-08-31">
+                                <div class="input-group-append">
+                                    <div class="input-group-text" id="button-addon-date"><span onclick="filterDate()"
+                                            class="fe fe-filter fe-16" style="opacity: 0.5; cursor: pointer;"
+                                            title="Filter"></span>
+                                    </div>
+                                    <div class="input-group-text" id="button-addon-date"><span onclick="resetDate()"
+                                            class="fe fe-refresh-cw fe-16" style="opacity: 0.5; cursor: pointer;"
+                                            title="Refresh"></span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-sm"><span
-                                    class="fe fe-refresh-ccw fe-12 text-muted"></span></button>
-                            <button type="button" class="btn btn-sm"><span
-                                    class="fe fe-filter fe-12 text-muted"></span></button>
                         </div>
                     </form>
                 </div>
@@ -86,12 +95,21 @@
             <div class="row my-4">
                 <div class="col-md-12">
                     <div class="chart-box">
-                        {{-- <div id="columnChart"></div> --}}
-                        {{-- <canvas id="barChartjs" width="400" height="300"></canvas> --}}
                         <canvas id="myChart"></canvas>
                     </div>
                 </div> <!-- .col -->
             </div> <!-- end section -->
+
+            <!-- error page/data tidak ditemukan-->
+            <div class="alert alert-danger notification" role="alert">
+                <span class="fe fe-frown fe-16 mr-2"></span> Data grafik pada <strong>Date Range</strong> ini tidak
+                ditemukan, Silahkan ulangi inputan
+                <strong>Date Range</strong> yang kamu masukan.!
+                <button type="button" onclick="window.location.reload()" class="close" data-dismiss="alert"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
 
 
         </div> <!-- .col-12 -->
@@ -108,6 +126,12 @@
 <script type="text/javascript">
     //get the pie chart canvas
     const data = <?php echo $data['chart_data'] ?>;
+
+    // initial filter dates
+    const dates = data.label;
+    const convertedDates = dates;
+    const datapoints = data.data;
+    console.log(convertedDates)
 
     // setup 
     const datas = {
@@ -194,10 +218,11 @@
     function modalClose(){
         barModal.classList.toggle('hide');
         $('#barModal').hide();
+        $('.notification').hide();
         $('#myChart').show();
         location.reload();
 
-    }
+    };
 
     function modalOpen(click){
         const points = myChart.getElementsAtEventForMode(click, 'nearest',{
@@ -238,16 +263,78 @@
                 });
                 $('#table-records').append(trHTML);
                 $('#myChart').hide();
+                $('.notification').hide();
                 $('#dateRange').hide();
                 $('#barModal').show();
 
                 }
             });
-        }
-        
-    }
+        };
+    };
 
     ctx.onclick = modalOpen;
+
+    //function convert timestamp to date
+    function timeConverter(UNIX_timestamp){
+        let date = new Date(UNIX_timestamp);
+        let year = date.getFullYear();
+        let month = ("0" + (date.getMonth() + 1)).substr(-2);
+        let day = ("0" + date.getDate()).substr(-2);
+        let hour = ("0" + date.getHours()).substr(-2);
+        let minutes = ("0" + date.getMinutes()).substr(-2);
+        let seconds = ("0" + date.getSeconds()).substr(-2);
+        // let time =  year + "-" + month + "-" + day + " " + hour + ":" + minutes + ":" + seconds;
+        let time =  year + "-" + month + "-" + day;
+        return time;
+    };
+
+    //function filter dates
+    function filterDate(){
+        const startDates = new Date(document.getElementById('start-date').value);
+        const startDateTimestamp = startDates.setHours(0,0,0,0);
+        const startDate = timeConverter(startDateTimestamp);
+        console.log(startDate)
+
+        const endDates = new Date(document.getElementById('end-date').value);
+        const endDateTimestamp = endDates.setHours(0,0,0,0);
+        const endDate = timeConverter(endDateTimestamp);
+        console.log(endDate)
+
+        const filterDates = convertedDates.filter(date => date >= startDate && date <= endDate);
+
+        if(filterDates.length >0){
+            $('.notification').hide();
+            myChart.config.data.labels = filterDates;
+
+            //working on the data
+            const startArray = convertedDates.indexOf(filterDates[0]);
+            const endArray = convertedDates.indexOf(filterDates[filterDates.length - 1]);
+            console.log(endArray);
+            const copyDataPoints = [...datapoints];
+            copyDataPoints.splice(endArray + 1, filterDates.length);
+            copyDataPoints.splice(0, startArray);
+            console.log(copyDataPoints);
+            myChart.config.data.datasets[0].data = copyDataPoints;
+            myChart.update();
+
+        }else{
+            $('#myChart').hide();
+            $('.notification').show();
+            // alert('Data tidak ditemukan');
+        }
+    }
+
+    //function reset data grafik
+    function resetDate(){
+        myChart.config.data.labels = convertedDates;
+        myChart.config.data.datasets[0].data = datapoints;
+        myChart.update();
+    }
+
+
+    //hide notification data tidak ditemukan
+    $('.notification').hide();
+
 </script>
 
 @endsection
